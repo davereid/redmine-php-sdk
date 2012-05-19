@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Defines TogglConnection.
+ * Defines RedmineConnection.
  */
 
 class RedmineConnection {
@@ -19,19 +19,23 @@ class RedmineConnection {
    * Construct the API object.
    */
   public function __construct($server, $key) {
-    $this->server = rtrim($server, '/');
-    $this->key = $key;
+    $this->setServer($server);
+    $this->setKey($key);
   }
 
   public function setServer($server) {
+    if (!filter_var($server, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
+      throw new RedmineException("Invalid Redmine server $server");
+    }
+
     $this->server = rtrim($server, '/');
   }
 
-  public function getServer($server) {
+  public function getServer() {
     return $this->server;
   }
 
-  public function setKey($token) {
+  public function setKey($key) {
     $this->key = $key;
   }
 
@@ -59,7 +63,7 @@ class RedmineConnection {
    *   A fully-quantified Toggl API URL.
    */
   public function getURL($resource, array $query = array()) {
-    $url = $this->server . '/' . $resource . '.json';
+    $url = $this->getServer() . '/' . $resource . '.json';
     if (!empty($query)) {
       $url .= '?' . http_build_query($query, NULL, '&');
     }
@@ -74,8 +78,7 @@ class RedmineConnection {
   protected function getHeaders() {
     return array(
       'X-Redmine-API-Key' => $this->getKey(),
-      //'Authorization' => 'Basic ' . base64_encode($this->token . ':api_token'),
-      //'User-Agent' => 'Toggl PHP SDK (+https://github.com/davereid/toggl-php-sdk)',
+      //'User-Agent' => 'Redmine PHP SDK (+https://github.com/davereid/redmine-php-sdk)',
     );
   }
 

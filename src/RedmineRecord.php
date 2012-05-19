@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Defines RedmineRecord.
+ */
+
 abstract class RedmineRecord {
   static $element_name;
   static $element_plural_name;
