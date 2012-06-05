@@ -57,17 +57,17 @@ abstract class RedmineRecord {
     }
 
     $class = get_called_class();
-    $url = $class::$element_plural_name . '/' . $id;
-    $response = $connection->request($connection->getURL($url));
+    $resource = $class::$element_plural_name . '/' . $id;
+    $response = $connection->request($resource);
     if (!empty($response->data[$class::$element_name])) {
       return new $class($connection, $response->data[$class::$element_name]);
     }
     return FALSE;
   }
 
-  public static function loadMultiple(RedmineConnection $connection, array $query = array(), array $options = array()) {
+  public static function loadMultiple(RedmineConnection $connection, array $options = array()) {
     $class = get_called_class();
-    $response = $connection->request($connection->getUrl($class::$element_plural_name, $query), $options);
+    $response = $connection->request($class::$element_plural_name, $options);
     $count = 0;
     foreach ($response->data[$class::$element_plural_name] as $key => $record) {
       $response->data[$class::$element_plural_name][$key] = new $class($connection, $record);
@@ -80,8 +80,8 @@ abstract class RedmineRecord {
   public function save(array $options = array()) {
     $options['method'] = !empty($this->id) ? 'PUT' : 'POST';
     $options['data'][$this::$element_name] = $this->data;
-    $url = $this::element_plural_name . (!empty($this->id) ? '/' . $this->id : '');
-    $response = $this->connection->request($this->getURL($url), $options);
+    $resource = $this::element_plural_name . (!empty($this->id) ? '/' . $this->id : '');
+    $response = $this->connection->request($resource, $options);
     $this->data = $response->data['data'];
     return TRUE;
   }
@@ -89,8 +89,8 @@ abstract class RedmineRecord {
   public function delete(array $options = array()) {
     if (!empty($this->id)) {
       $options['method'] = 'DELETE';
-      $url = $this::$element_plural_name . '/' . $this->id;
-      $response = $this->connection->request($this->getURL($url), $options);
+      $resource = $this::$element_plural_name . '/' . $this->id;
+      $response = $this->connection->request($resource, $options);
     }
     $this->data = array();
     return TRUE;

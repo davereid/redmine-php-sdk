@@ -60,7 +60,7 @@ class RedmineConnection {
    *   An array of query string parameters to add to the URL.
    *
    * @return
-   *   A fully-quantified Toggl API URL.
+   *   A fully-quantified Redmine API URL.
    */
   public function getURL($resource, array $query = array()) {
     $url = $this->getServer() . '/' . $resource . '.json';
@@ -82,12 +82,15 @@ class RedmineConnection {
     );
   }
 
-  public function request($url, array $options = array()) {
+  public function request($resource, array $options = array()) {
     $options += $this->getOptions() + array(
       'headers' => array(),
       'method' => 'GET',
+      'query' => array(),
       'data' => NULL,
     );
+
+    $url = $this->getURL($resource, $options['query']);
 
     // Set the CURL variables.
     $ch = curl_init();
@@ -129,7 +132,7 @@ class RedmineConnection {
   }
 
   public function getCurrentUser(array $options = array()) {
-    $response = $this->request($this->getURL('users/current'), $options);
+    $response = $this->request('users/current', $options);
     if (!empty($response->data['user'])) {
       return new RedmineUser($this, $response->data['user']);
     }
