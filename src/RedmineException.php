@@ -1,3 +1,5 @@
 <?php
 
-class RedmineException extends Exception {}
+class RedmineException extends Exception {
+  
+}
